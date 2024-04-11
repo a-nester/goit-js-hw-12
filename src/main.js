@@ -12,8 +12,9 @@ const galleryList = document.querySelector(".gallery")
 const loader = document.querySelector(".loader")
 
 searchForm.addEventListener("submit", handleClick);
+let page = 1;
 
-function handleClick(event) {
+async function handleClick(event) {
     event.preventDefault();
     loader.classList.toggle('isHiden');
     
@@ -25,14 +26,8 @@ function handleClick(event) {
             message: "Sorry, there are no images matching your search query. Please try again!",
         });
     }
-    createFetch(searchValue)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.status)
-            }
-            return response.json()
-        })
-        .then(data => {
+    await createFetch(searchValue, page)
+        .then(({ data }) => {
             if (data.hits.length === 0) {
                 return iziToast.error({
                     position: "topRight",
@@ -56,6 +51,7 @@ function handleClick(event) {
         .finally(() => {
             searchForm.elements[0].value = "";
             loaderToggle();
+            page += 1;
         })
 }
 

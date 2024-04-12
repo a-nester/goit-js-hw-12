@@ -57,7 +57,6 @@ async function handleClick(event) {
         .finally(() => {
             searchForm.elements[0].value = "";
             loaderToggle();
-            console.log(page);
         })
 }
 
@@ -92,6 +91,7 @@ async function handleLoadMore() {
                     message: "We're sorry, but you've reached the end of search results.",
                 });
             }
+            
         })
         .catch(err => iziToast.error({
                     position: "topRight",
@@ -99,6 +99,11 @@ async function handleLoadMore() {
                 }))
         .finally(() => {
             loaderToggle();
+            const domRect = galleryList.lastElementChild.getBoundingClientRect();
+            window.scrollBy({
+                top: domRect.height * 2,
+                behavior: "smooth"
+            })
         })
 }
 

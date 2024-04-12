@@ -14,7 +14,7 @@ const loadBtn = document.querySelector(".js-load-more");
 
 searchForm.addEventListener("submit", handleClick);
 loadBtn.addEventListener("click", handleLoadMore);
-let page = 32;
+let page = 1;
 let searchValue = "";
 
 async function handleClick(event) {

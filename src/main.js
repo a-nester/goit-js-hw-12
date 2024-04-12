@@ -65,47 +65,47 @@ async function handleLoadMore() {
     loadBtn.classList.replace("load-more", "load-more-hiden")
     loaderToggle();
     page += 1;
-    await createFetch(searchValue, page)
-        .then(({ data }) => {
-            if (data.hits.length === 0) {
-                return iziToast.error({
-                    position: "topRight",
-                    message: "Sorry, there are no images matching your search query. Please try again!",
-                });
-            }
-            let gallery = new SimpleLightbox('.gallery a', {
-                captionsData: "alt",
-                captionDelay: 250,
-                captionClass: 'text-center'
+    try {
+        const { data } = await createFetch(searchValue, page)
+        // .then(({ data }) => {
+        if (data.hits.length === 0) {
+            return iziToast.error({
+                position: "topRight",
+                message: "Sorry, there are no images matching your search query. Please try again!",
             });
+        }
+        let gallery = new SimpleLightbox('.gallery a', {
+            captionsData: "alt",
+            captionDelay: 250,
+            captionClass: 'text-center'
+        });
             
-            galleryList.insertAdjacentHTML("beforeend", createMarkup(data.hits));
-            gallery.refresh();
-            const totalPages = Math.ceil(data.totalHits/data.hits.length)
+        galleryList.insertAdjacentHTML("beforeend", createMarkup(data.hits));
+        gallery.refresh();
+        const totalPages = Math.ceil(data.totalHits / data.hits.length)
     
-            if (page < totalPages) {
-                loadBtn.classList.replace("load-more-hiden", "load-more")
-            } else {
-                loadBtn.classList.replace("load-more", "load-more-hiden")
-                return iziToast.error({
-                    position: "topRight",
-                    message: "We're sorry, but you've reached the end of search results.",
-                });
-            }
-            
+        if (page < totalPages) {
+            loadBtn.classList.replace("load-more-hiden", "load-more")
+        } else {
+            loadBtn.classList.replace("load-more", "load-more-hiden")
+            return iziToast.error({
+                position: "topRight",
+                message: "We're sorry, but you've reached the end of search results.",
+            });
+        }
+    } catch {
+        iziToast.error({
+            position: "topRight",
+            message: "Sorry, there are no images matching your search query. Please try again!",
         })
-        .catch(err => iziToast.error({
-                    position: "topRight",
-                    message: "Sorry, there are no images matching your search query. Please try again!",
-                }))
-        .finally(() => {
+    } finally {
             loaderToggle();
             const domRect = galleryList.firstElementChild.getBoundingClientRect();
-            window.scrollBy({
-                top: domRect.height * 2,
-                behavior: "smooth"
-            })
-        })
+        window.scrollBy({
+            top: domRect.height * 2,
+            behavior: "smooth"
+        });
+    }
 }
 
 function loaderToggle() {

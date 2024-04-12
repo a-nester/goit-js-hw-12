@@ -8,17 +8,20 @@ import { createFetch } from "./js/pixabay-api";
 import { createMarkup } from "./js/render-functions";
 
 const searchForm = document.querySelector(".search-form");
-const galleryList = document.querySelector(".gallery")
-const loader = document.querySelector(".loader")
+const galleryList = document.querySelector(".gallery");
+const loader = document.querySelector(".loader");
+const loadBtn = document.querySelector(".js-load-more");
 
 searchForm.addEventListener("submit", handleClick);
-let page = 1;
+loadBtn.addEventListener("click", handleLoadMore);
+let page = 32;
+let searchValue = "";
 
 async function handleClick(event) {
     event.preventDefault();
-    loader.classList.toggle('isHiden');
+    loaderToggle();
     
-    let searchValue = searchForm.elements[0].value.trim();
+    searchValue = searchForm.elements[0].value.trim();
     if (!searchValue) {
         loaderToggle();
         return iziToast.error({
@@ -42,7 +45,10 @@ async function handleClick(event) {
             
             galleryList.innerHTML = createMarkup(data.hits);
             gallery.refresh();
-            
+            const totalPages = Math.ceil(data.totalHits/data.hits.length)
+            if (page < totalPages) {
+                loadBtn.classList.replace("load-more-hiden", "load-more")
+            }
         })
         .catch(err => iziToast.error({
                     position: "topRight",
@@ -51,7 +57,48 @@ async function handleClick(event) {
         .finally(() => {
             searchForm.elements[0].value = "";
             loaderToggle();
-            page += 1;
+        })
+}
+
+async function handleLoadMore() {
+    loadBtn.classList.replace("load-more", "load-more-hiden")
+    loaderToggle();
+    page += 1;
+    await createFetch(searchValue, page)
+        .then(({ data }) => {
+            if (data.hits.length === 0) {
+                return iziToast.error({
+                    position: "topRight",
+                    message: "Sorry, there are no images matching your search query. Please try again!",
+                });
+            }
+            let gallery = new SimpleLightbox('.gallery a', {
+                captionsData: "alt",
+                captionDelay: 250,
+                captionClass: 'text-center'
+            });
+            
+            galleryList.innerHTML = createMarkup(data.hits);
+            gallery.refresh();
+            const totalPages = Math.ceil(data.totalHits/data.hits.length)
+    
+            if (page < totalPages) {
+                loadBtn.classList.replace("load-more-hiden", "load-more")
+            } else {
+                loadBtn.classList.replace("load-more", "load-more-hiden")
+                return iziToast.error({
+                    position: "topRight",
+                    message: "We're sorry, but you've reached the end of search results.",
+                });
+            //"We're sorry, but you've reached the end of search results."
+            }
+        })
+        .catch(err => iziToast.error({
+                    position: "topRight",
+                    message: "Sorry, there are no images matching your search query. Please try again!",
+                }))
+        .finally(() => {
+            loaderToggle();
         })
 }
 

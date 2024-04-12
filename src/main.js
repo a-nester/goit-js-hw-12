@@ -29,35 +29,36 @@ async function handleClick(event) {
             message: "Sorry, there are no images matching your search query. Please try again!",
         });
     }
-    await createFetch(searchValue, page)
-        .then(({ data }) => {
-            if (data.hits.length === 0) {
-                return iziToast.error({
-                    position: "topRight",
-                    message: "Sorry, there are no images matching your search query. Please try again!",
-                });
-            }
-            let gallery = new SimpleLightbox('.gallery a', {
-                captionsData: "alt",
-                captionDelay: 250,
-                captionClass: 'text-center'
-            });
+    try {
+        const { data } = await createFetch(searchValue, page);
             
-            galleryList.innerHTML = createMarkup(data.hits);
-            gallery.refresh();
-            const totalPages = Math.ceil(data.totalHits/data.hits.length)
-            if (page < totalPages) {
-                loadBtn.classList.replace("load-more-hiden", "load-more")
-            }
+                if (data.hits.length === 0) {
+                    return iziToast.error({
+                        position: "topRight",
+                        message: "Sorry, there are no images matching your search query. Please try again!",
+                    });
+                }
+                let gallery = new SimpleLightbox('.gallery a', {
+                    captionsData: "alt",
+                    captionDelay: 250,
+                    captionClass: 'text-center'
+                });
+            
+                galleryList.innerHTML = createMarkup(data.hits);
+                gallery.refresh();
+                const totalPages = Math.ceil(data.totalHits / data.hits.length)
+                if (page < totalPages) {
+                    loadBtn.classList.replace("load-more-hiden", "load-more")
+                }
+    } catch {
+        iziToast.error({
+            position: "topRight",
+            message: "Sorry, there are no images matching your search query. Please try again!",
         })
-        .catch(err => iziToast.error({
-                    position: "topRight",
-                    message: "Sorry, there are no images matching your search query. Please try again!",
-                }))
-        .finally(() => {
+    } finally {
             searchForm.elements[0].value = "";
             loaderToggle();
-        })
+    }
 }
 
 async function handleLoadMore() {

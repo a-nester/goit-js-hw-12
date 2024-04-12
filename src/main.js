@@ -99,7 +99,7 @@ async function handleLoadMore() {
                 }))
         .finally(() => {
             loaderToggle();
-            const domRect = galleryList.lastElementChild.getBoundingClientRect();
+            const domRect = galleryList.firstElementChild.getBoundingClientRect();
             window.scrollBy({
                 top: domRect.height * 2,
                 behavior: "smooth"

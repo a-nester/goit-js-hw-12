@@ -57,6 +57,7 @@ async function handleClick(event) {
         .finally(() => {
             searchForm.elements[0].value = "";
             loaderToggle();
+            console.log(page);
         })
 }
 
@@ -78,7 +79,7 @@ async function handleLoadMore() {
                 captionClass: 'text-center'
             });
             
-            galleryList.innerHTML = createMarkup(data.hits);
+            galleryList.insertAdjacentHTML("beforeend", createMarkup(data.hits));
             gallery.refresh();
             const totalPages = Math.ceil(data.totalHits/data.hits.length)
     
@@ -90,7 +91,6 @@ async function handleLoadMore() {
                     position: "topRight",
                     message: "We're sorry, but you've reached the end of search results.",
                 });
-            //"We're sorry, but you've reached the end of search results."
             }
         })
         .catch(err => iziToast.error({

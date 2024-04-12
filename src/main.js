@@ -14,13 +14,13 @@ const loadBtn = document.querySelector(".js-load-more");
 
 searchForm.addEventListener("submit", handleClick);
 loadBtn.addEventListener("click", handleLoadMore);
-let page = 1;
+let page = null;
 let searchValue = "";
 
 async function handleClick(event) {
     event.preventDefault();
     loaderToggle();
-    
+    page = 1;
     searchValue = searchForm.elements[0].value.trim();
     if (!searchValue) {
         loaderToggle();
@@ -67,23 +67,22 @@ async function handleLoadMore() {
     page += 1;
     try {
         const { data } = await createFetch(searchValue, page)
-        // .then(({ data }) => {
-        if (data.hits.length === 0) {
-            return iziToast.error({
-                position: "topRight",
-                message: "Sorry, there are no images matching your search query. Please try again!",
-            });
-        }
+        
+        // if (data.hits.length === 0) {
+        //     return iziToast.error({
+        //         position: "topRight",
+        //         message: "Sorry, there are no images matching your search query. Please try again!",
+        //     });
+        // }
         let gallery = new SimpleLightbox('.gallery a', {
             captionsData: "alt",
             captionDelay: 250,
             captionClass: 'text-center'
         });
-            
+        const totalPages = Math.ceil(data.totalHits / data.hits.length)    
         galleryList.insertAdjacentHTML("beforeend", createMarkup(data.hits));
         gallery.refresh();
-        const totalPages = Math.ceil(data.totalHits / data.hits.length)
-    
+        
         if (page < totalPages) {
             loadBtn.classList.replace("load-more-hiden", "load-more")
         } else {

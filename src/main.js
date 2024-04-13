@@ -20,7 +20,7 @@ let searchValue = "";
 async function handleClick(event) {
     event.preventDefault();
     loaderToggle();
-    page = 1;
+    page = 32;
     searchValue = searchForm.elements[0].value.trim();
     if (!searchValue) {
         loaderToggle();
@@ -66,14 +66,8 @@ async function handleLoadMore() {
     loaderToggle();
     page += 1;
     try {
-        const { data } = await createFetch(searchValue, page)
+        const { data } = await createFetch(searchValue, page);
         
-        // if (data.hits.length === 0) {
-        //     return iziToast.error({
-        //         position: "topRight",
-        //         message: "Sorry, there are no images matching your search query. Please try again!",
-        //     });
-        // }
         let gallery = new SimpleLightbox('.gallery a', {
             captionsData: "alt",
             captionDelay: 250,

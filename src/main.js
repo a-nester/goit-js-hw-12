@@ -19,11 +19,13 @@ let searchValue = "";
 
 async function handleClick(event) {
     event.preventDefault();
-    loaderToggle();
-    page = 32;
+    loader.classList.remove('isHiden');
+    page = 1;
     searchValue = searchForm.elements[0].value.trim();
+    console.log(searchForm.elements);
+
     if (!searchValue) {
-        loaderToggle();
+        loader.classList.add('isHiden');
         return iziToast.error({
             position: "topRight",
             message: "Sorry, there are no images matching your search query. Please try again!",
@@ -57,13 +59,13 @@ async function handleClick(event) {
         })
     } finally {
             searchForm.elements[0].value = "";
-            loaderToggle();
+            loader.classList.add('isHiden');
     }
 }
 
 async function handleLoadMore() {
     loadBtn.classList.replace("load-more", "load-more-hiden")
-    loaderToggle();
+    loader.classList.remove('isHiden');
     page += 1;
     try {
         const { data } = await createFetch(searchValue, page);
@@ -92,7 +94,7 @@ async function handleLoadMore() {
             message: "Sorry, there are no images matching your search query. Please try again!",
         })
     } finally {
-            loaderToggle();
+            loader.classList.add('isHiden');
             const domRect = galleryList.firstElementChild.getBoundingClientRect();
         window.scrollBy({
             top: domRect.height * 2,
@@ -101,8 +103,8 @@ async function handleLoadMore() {
     }
 }
 
-function loaderToggle() {
-    loader.classList.toggle('isHiden');
-}
+// function loaderToggle() {
+//     loader.classList.toggle('isHiden');
+// }
 
 

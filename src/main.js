@@ -17,12 +17,17 @@ loadBtn.addEventListener("click", handleLoadMore);
 let page = null;
 let searchValue = "";
 
+let gallery = new SimpleLightbox('.gallery a', {
+            captionsData: "alt",
+            captionDelay: 250,
+            captionClass: 'text-center'
+        });
+
 async function handleClick(event) {
     event.preventDefault();
     loader.classList.remove('isHiden');
     page = 1;
     searchValue = searchForm.elements[0].value.trim();
-    console.log(searchForm.elements);
 
     if (!searchValue) {
         loader.classList.add('isHiden');
@@ -40,18 +45,13 @@ async function handleClick(event) {
                         message: "Sorry, there are no images matching your search query. Please try again!",
                     });
                 }
-                let gallery = new SimpleLightbox('.gallery a', {
-                    captionsData: "alt",
-                    captionDelay: 250,
-                    captionClass: 'text-center'
-                });
-            
-                galleryList.innerHTML = createMarkup(data.hits);
-                gallery.refresh();
+                // deleted SimpleLightbox
                 const totalPages = Math.ceil(data.totalHits / data.hits.length)
                 if (page < totalPages) {
                     loadBtn.classList.replace("load-more-hiden", "load-more")
                 }
+                galleryList.innerHTML = createMarkup(data.hits);
+                gallery.refresh();
     } catch {
         iziToast.error({
             position: "topRight",
@@ -69,12 +69,7 @@ async function handleLoadMore() {
     page += 1;
     try {
         const { data } = await createFetch(searchValue, page);
-        
-        let gallery = new SimpleLightbox('.gallery a', {
-            captionsData: "alt",
-            captionDelay: 250,
-            captionClass: 'text-center'
-        });
+        // deleted SimpleLightbox
         const totalPages = Math.ceil(data.totalHits / data.hits.length)    
         galleryList.insertAdjacentHTML("beforeend", createMarkup(data.hits));
         gallery.refresh();
@@ -102,9 +97,5 @@ async function handleLoadMore() {
         });
     }
 }
-
-// function loaderToggle() {
-//     loader.classList.toggle('isHiden');
-// }
 
 

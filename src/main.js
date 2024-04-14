@@ -14,7 +14,7 @@ const loadBtn = document.querySelector(".js-load-more");
 
 searchForm.addEventListener("submit", handleClick);
 loadBtn.addEventListener("click", handleLoadMore);
-let page = null;
+let page = 1;
 let searchValue = "";
 
 let gallery = new SimpleLightbox('.gallery a', {
@@ -28,7 +28,6 @@ async function handleClick(event) {
     galleryList.innerHTML = '';
     loader.classList.remove('isHiden');
     loadBtn.classList.replace("load-more", "load-more-hiden");
-    page = 1;
     searchValue = searchForm.elements[0].value.trim();
 
     if (!searchValue) {
@@ -67,6 +66,7 @@ async function handleClick(event) {
 }
 
 async function handleLoadMore() {
+    loadBtn.classList.replace("load-more", "load-more-hiden");
     loader.classList.remove('isHiden');
     page += 1;
     try {
@@ -76,13 +76,18 @@ async function handleLoadMore() {
         gallery.refresh();
         
         const totalPages = Math.ceil(data.totalHits / data.hits.length);
-        if (page >= totalPages) {
-            loadBtn.classList.replace("load-more", "load-more-hiden");
+        if (page < totalPages) {
+            loadBtn.classList.replace("load-more-hiden", "load-more");
+        } else {
+            iziToast.error({
+            position: "topRight",
+            message: "We're sorry, but you've reached the end of search results.",
+        })
         }
     } catch {
         iziToast.error({
             position: "topRight",
-            message: "We're sorry, but you've reached the end of search results.",
+            message: "Something went wrong. Please try again!"
         })
     } finally {
         loader.classList.add('isHiden');

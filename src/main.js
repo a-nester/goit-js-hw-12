@@ -25,6 +25,7 @@ let gallery = new SimpleLightbox('.gallery a', {
 
 async function handleClick(event) {
     event.preventDefault();
+    page = 1;
     galleryList.innerHTML = '';
     loader.classList.remove('isHiden');
     loadBtn.classList.replace("load-more", "load-more-hiden");
@@ -76,6 +77,8 @@ async function handleLoadMore() {
         gallery.refresh();
         
         const totalPages = Math.ceil(data.totalHits / data.hits.length);
+        console.log(totalPages);
+        console.log(page);
         if (page < totalPages) {
             loadBtn.classList.replace("load-more-hiden", "load-more");
         } else {

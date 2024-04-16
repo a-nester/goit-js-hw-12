@@ -14,6 +14,7 @@ const loadBtn = document.querySelector(".js-load-more");
 
 searchForm.addEventListener("submit", handleClick);
 loadBtn.addEventListener("click", handleLoadMore);
+let totalPages = 0;
 let page = 1;
 let searchValue = "";
 
@@ -49,11 +50,11 @@ async function handleClick(event) {
                 }
                 
         galleryList.innerHTML = createMarkup(data.hits);
-        const totalPages = Math.ceil(data.totalHits / data.hits.length);
-        if (page < totalPages) {
+        if (data.totalHits > data.hits.length) {
             loadBtn.classList.replace("load-more-hiden", "load-more");
         } 
         gallery.refresh();
+        totalPages = Math.ceil(data.totalHits / data.hits.length);
     } catch {
         loadBtn.classList.replace("load-more", "load-more-hiden")
         iziToast.error({
@@ -76,9 +77,6 @@ async function handleLoadMore() {
         galleryList.insertAdjacentHTML("beforeend", createMarkup(data.hits));
         gallery.refresh();
         
-        const totalPages = Math.ceil(data.totalHits / data.hits.length);
-        console.log(totalPages);
-        console.log(page);
         if (page < totalPages) {
             loadBtn.classList.replace("load-more-hiden", "load-more");
         } else {

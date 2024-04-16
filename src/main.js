@@ -80,7 +80,7 @@ async function handleLoadMore() {
         if (page < totalPages) {
             loadBtn.classList.replace("load-more-hiden", "load-more");
         } else {
-            iziToast.error({
+            iziToast.info({
             position: "topRight",
             message: "We're sorry, but you've reached the end of search results.",
         })
